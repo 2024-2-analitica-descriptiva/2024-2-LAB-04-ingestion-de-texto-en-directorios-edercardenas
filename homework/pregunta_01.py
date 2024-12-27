@@ -71,3 +71,42 @@ def pregunta_01():
 
 
     """
+    import os
+    import pandas as pd
+
+    # # Descomprima el archivo
+    # os.system("unzip -o files/input.zip -d files/")
+
+    # Listar los archivos
+    files = [
+        "files/input/train/negative",
+        "files/input/train/positive",
+        "files/input/train/neutral",
+        "files/input/test/negative",
+        "files/input/test/positive",
+        "files/input/test/neutral",
+    ]
+
+    # Crear los dataframes
+    train_dataset = pd.DataFrame(columns=["phrase", "target"])
+    test_dataset = pd.DataFrame(columns=["phrase", "target"])
+
+    for file in files:
+        sentiment = file.split("/")[-1]
+        for txt in os.listdir(file):
+            with open(f"{file}/{txt}") as f:
+                phrase = f.read()
+                nuevo_registro = pd.DataFrame([{"phrase": phrase, "target": sentiment}])
+            if "train" in file:
+                train_dataset = pd.concat([train_dataset, nuevo_registro], ignore_index=True)
+            else:
+                test_dataset = pd.concat([test_dataset, nuevo_registro], ignore_index=True)
+
+    # Guardar los dataframes
+    os.makedirs('files/output', exist_ok=True)
+    train_dataset.to_csv("files/output/train_dataset.csv", index=False)
+    test_dataset.to_csv("files/output/test_dataset.csv", index=False)
+
+    return print('listo')
+
+pregunta_01()
